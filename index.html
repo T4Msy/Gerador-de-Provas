@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <title>Gerador de Provas • MSY</title>
 <style>
-/* ---------------------------- */
-/* RESET + BASE MSY */
-/* ---------------------------- */
 *{ box-sizing:border-box; margin:0; padding:0; }
 body{
   font-family: "Segoe UI", system-ui, sans-serif;
@@ -20,14 +17,10 @@ body{
   animation:fadeIn 1s ease-out;
   overflow-x:hidden;
 }
-/* animação de entrada */
 @keyframes fadeIn{
   from{opacity:0; transform:translateY(20px);}
   to{opacity:1; transform:translateY(0);}
 }
-/* ---------------------------- */
-/* TÍTULOS */
-/* ---------------------------- */
 h1{
   font-size:36px;
   font-weight:800;
@@ -49,9 +42,6 @@ h1{
   opacity:0.8;
   letter-spacing:0.02em;
 }
-/* ---------------------------- */
-/* CARD PRINCIPAL MSY */
-/* ---------------------------- */
 .card{
   width:100%;
   max-width:950px;
@@ -69,7 +59,6 @@ h1{
   from{opacity:0; transform:translateY(25px);}
   to{opacity:1; transform:translateY(0);}
 }
-/* brilho interno animado */
 .card::before{
   content:"";
   position:absolute;
@@ -85,18 +74,12 @@ h1{
   0%,100%{opacity:0.4;}
   50%{opacity:0.7;}
 }
-/* ---------------------------- */
-/* GRID */
-/* ---------------------------- */
 .row{
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:18px;
 }
 .full{ grid-column:1 / -1; }
-/* ---------------------------- */
-/* CAMPOS */
-/* ---------------------------- */
 .field label,
 label{
   font-size:14px;
@@ -121,18 +104,12 @@ input:focus, select:focus{
   transform:translateY(-1px);
 }
 input[type="file"]{ padding:8px; }
-/* ---------------------------- */
-/* CHECKBOX */
-/* ---------------------------- */
 .chk{
   display:flex;
   align-items:flex-start;
   gap:8px;
 }
 .chk input{ width:auto; }
-/* ---------------------------- */
-/* BOTÃO PRINCIPAL */
-/* ---------------------------- */
 button{
   margin-top:25px;
   width:100%;
@@ -155,7 +132,6 @@ button:hover{
   box-shadow:0 0 25px rgba(255,0,0,0.6);
 }
 button:active{ transform:scale(0.98); }
-/* LOADER */
 .is-loading{
   opacity:0.8;
   pointer-events:none;
@@ -169,10 +145,6 @@ button:active{ transform:scale(0.98); }
   animation:spin 0.7s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg);}}
-
-/* ---------------------------- */
-/* RESULTADO */
-/* ---------------------------- */
 #resultado{
   margin-top:22px;
   font-size:15px;
@@ -196,10 +168,6 @@ button:active{ transform:scale(0.98); }
 @keyframes bounce{
   to{transform:translateY(-3px); opacity:0.6;}
 }
-
-/* ---------------------------- */
-/* IFRAME PREVIEW */
-/* ---------------------------- */
 iframe{
   width:100%;
   min-height:600px;
@@ -209,11 +177,36 @@ iframe{
   background:#000;
   box-shadow:0 0 20px rgba(255,0,0,0.2);
 }
-
-/* RESPONSIVO */
+.download-actions{
+  margin-top:16px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+.download-actions button{
+  width:auto;
+  padding:10px 18px;
+  font-size:14px;
+  margin-top:0;
+}
 @media(max-width:720px){
   .row{grid-template-columns:1fr;}
   body{padding:20px 15px;}
+}
+.help-text{
+  font-size:12px;
+  color:#ffcccc;
+  margin-top:2px;
+  opacity:0.85;
+}
+/* deixar #prova-html pequeno e fora da vista, mas não display:none */
+#prova-html{
+  position:absolute;
+  left:-9999px;
+  top:-9999px;
+  width:800px;
+  background:#fff;
+  color:#000;
 }
 </style>
 </head>
@@ -225,26 +218,20 @@ iframe{
   <div class="row">
 
     <!-- ESCOLHA DE IA -->
-   <div class="full">
-  <label for="ia">Inteligência Artificial (motor de geração da prova)</label>
-  <select id="ia">
-    <option value="perplexity">
-      Perplexity (Sonar) – ideal para provas bem contextualizadas, estilo ENEM e ensino médio. 
-      Gera enunciados mais longos, situações-problema e questões que avaliam compreensão e interpretação.
-    </option>
-
-    <option value="llama" selected>
-      LLaMA – indicado para provas gerais e rascunhos rápidos. 
-      Produz questões variadas, mas pode exigir revisão do professor em conteúdos técnicos específicos.
-    </option>
-
-    <option value="deepseek">
-      DeepSeek – recomendado para provas técnicas, informática, matemática e exatas. 
-      Alta precisão conceitual, comandos corretos e estrutura de prova mais objetiva e estável.
-    </option>
-  </select>
-</div>
-
+    <div class="full">
+      <label for="ia">Inteligência Artificial (motor de geração da prova)</label>
+      <select id="ia">
+        <option value="perplexity">
+          Perplexity (Sonar) – ideal para provas bem contextualizadas, estilo ENEM e ensino médio.
+        </option>
+        <option value="llama" selected>
+          LLaMA – indicado para provas gerais e rascunhos rápidos.
+        </option>
+        <option value="deepseek">
+          DeepSeek – recomendado para provas técnicas, informática, matemática e exatas.
+        </option>
+      </select>
+    </div>
 
     <div class="full">
       <label>Curso</label>
@@ -277,7 +264,7 @@ iframe{
     </div>
 
     <div>
-      <label>Nível</label>
+      <label>Nível principal</label>
       <select id="nivel">
         <option value="facil">Fácil</option>
         <option value="medio" selected>Médio</option>
@@ -308,14 +295,12 @@ iframe{
       <input type="text" id="publico" value="Ensino médio">
     </div>
 
-    <div>
-      <label>Versões</label>
-      <input type="number" id="versoes" value="1">
-    </div>
-
-    <div>
-      <label>Distribuição (%)</label>
+    <div class="full">
+      <label>Distribuição por nível (%)</label>
       <input type="text" id="dist_niveis" value="40/40/20">
+      <div class="help-text">
+        Exemplo: 40/40/20 = 40% questões fáceis, 40% médias e 20% difíceis.
+      </div>
     </div>
 
     <div class="full">
@@ -336,15 +321,35 @@ iframe{
   </div>
 
   <button onclick="gerar()">Gerar Prova</button>
+
   <div id="resultado"></div>
-  <iframe id="preview" style="display:none;"></iframe>
+
+  <!-- Área da prova + botões de download -->
+  <div id="prova-container" style="margin-top:16px; display:none;">
+    <div class="download-actions">
+      <button type="button" onclick="baixarPDF()">Baixar em PDF</button>
+      <button type="button" onclick="baixarWord()">Baixar em Word</button>
+    </div>
+    <iframe id="preview"></iframe>
+    <!-- Conteúdo da prova em HTML puro para exportação -->
+    <div id="prova-html"></div>
+  </div>
 </div>
+
+<!-- PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Word -->
+<script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.1.0/dist/html-docx.min.js"></script>
 
 <script>
 async function gerar(){
   const botao = document.querySelector("button");
   const resultado = document.getElementById("resultado");
   const iframe = document.getElementById("preview");
+  const provaContainer = document.getElementById("prova-container");
+  const provaHtmlDiv = document.getElementById("prova-html");
 
   botao.classList.add("is-loading");
   const textoOriginal = botao.innerHTML;
@@ -355,6 +360,8 @@ async function gerar(){
     '<div class="loading-dots"><span></span><span></span><span></span></div>' +
     '</div>';
   iframe.style.display = "none";
+  provaContainer.style.display = "none";
+  provaHtmlDiv.innerHTML = "";
 
   const payload = {
     curso: document.getElementById("curso").value.trim(),
@@ -368,10 +375,10 @@ async function gerar(){
     estilo: document.getElementById("estilo").value,
     publico: document.getElementById("publico").value.trim(),
     incluir_gabarito: document.getElementById("gabarito").checked,
-    versoes: parseInt(document.getElementById("versoes").value),
+    versoes: 1,
     dist_niveis: document.getElementById("dist_niveis").value.trim(),
     usar_apostila: document.getElementById("usar_apostila").checked,
-    ia: document.getElementById("ia").value   // <- IA escolhida
+    ia: document.getElementById("ia").value
   };
 
   const formData = new FormData();
@@ -382,7 +389,7 @@ async function gerar(){
   }
 
   try{
-    const resp = await fetch("https://masayoshi.app.n8n.cloud/webhook/gerar-prova",{
+    const resp = await fetch("https://masayoshi.app.n8n.cloud/webhook-test/gerar-prova",{
       method:"POST",
       body:formData
     });
@@ -398,6 +405,10 @@ async function gerar(){
       `<strong>Curso:</strong> ${data.curso || ""}<br>` +
       `<strong>Questões:</strong> ${data.questoes?.length || 0}`;
 
+    // guarda HTML cru para exportação
+    provaHtmlDiv.innerHTML = data.html_prova;
+
+    // Exibe no iframe com fundo branco
     iframe.srcdoc =
       `<style>
         body { background:#ffffff !important; color:#000000 !important; font-family:Arial,sans-serif !important; }
@@ -406,12 +417,53 @@ async function gerar(){
       data.html_prova;
 
     iframe.style.display = "block";
+    provaContainer.style.display = "block";
   }catch(e){
     resultado.innerHTML = "Erro ao gerar prova: " + e.message;
   }finally{
     botao.classList.remove("is-loading");
     botao.innerHTML = textoOriginal;
   }
+}
+
+function baixarPDF(){
+  const element = document.getElementById("prova-html");
+  if(!element || !element.innerHTML.trim()){
+    alert("Nenhuma prova gerada ainda.");
+    return;
+  }
+  const opt = {
+    margin: 10,
+    filename: 'prova-masayoshi.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+
+function baixarWord(){
+  const element = document.getElementById("prova-html");
+  if(!element || !element.innerHTML.trim()){
+    alert("Nenhuma prova gerada ainda.");
+    return;
+  }
+  if (!window.htmlDocx || !window.htmlDocx.asBlob) {
+    alert("Biblioteca de Word não carregou.");
+    return;
+  }
+  const html =
+    '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Prova Masayoshi</title>' +
+    '<style>body{font-family:Arial,sans-serif;font-size:12pt;}</style></head><body>' +
+    element.innerHTML +
+    '</body></html>';
+  const blob = window.htmlDocx.asBlob(html);
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = 'prova-masayoshi.docx';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 </script>
 </body>
