@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Gerador de Provas • MSY</title>
+<style>
+/* ---------------------------- */
+/* RESET + BASE MSY */
+/* ---------------------------- */
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: radial-gradient(circle at top,#1a0000,#0f0000,#000000);
+  color:#fff;
+  min-height:100vh;
+  padding:40px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  animation:fadeIn 1s ease-out;
+  overflow-x:hidden;
+}
+/* animação de entrada */
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(20px);}
+  to{opacity:1; transform:translateY(0);}
+}
+/* ---------------------------- */
+/* TÍTULOS */
+/* ---------------------------- */
+h1{
+  font-size:36px;
+  font-weight:800;
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+  background:linear-gradient(90deg,#ff4545,#b30000,#600000);
+  -webkit-background-clip:text;
+  color:transparent;
+  text-shadow:0 0 20px rgba(255,0,0,0.5);
+  animation:titleGlow 4s ease-in-out infinite;
+}
+@keyframes titleGlow{
+  0%,100%{text-shadow:0 0 20px rgba(255,0,0,0.5);}
+  50%{text-shadow:0 0 35px rgba(255,0,0,0.9);}
+}
+.sub{
+  margin-top:6px;
+  font-size:15px;
+  opacity:0.8;
+  letter-spacing:0.02em;
+}
+/* ---------------------------- */
+/* CARD PRINCIPAL MSY */
+/* ---------------------------- */
+.card{
+  width:100%;
+  max-width:950px;
+  background:rgba(20,0,0,0.4);
+  border:1px solid rgba(255,0,0,0.25);
+  border-radius:20px;
+  padding:28px;
+  margin-top:25px;
+  backdrop-filter:blur(14px);
+  box-shadow: 0 0 25px rgba(255,0,0,0.18), inset 0 0 25px rgba(255,0,0,0.15);
+  position:relative;
+  animation:cardIn 1.2s ease-out;
+}
+@keyframes cardIn{
+  from{opacity:0; transform:translateY(25px);}
+  to{opacity:1; transform:translateY(0);}
+}
+/* brilho interno animado */
+.card::before{
+  content:"";
+  position:absolute;
+  top:-40%;
+  right:-30%;
+  width:290px;
+  height:290px;
+  background:radial-gradient(circle,rgba(255,0,0,0.4),transparent 70%);
+  filter:blur(40px);
+  animation:pulse 5s infinite ease-in-out;
+}
+@keyframes pulse{
+  0%,100%{opacity:0.4;}
+  50%{opacity:0.7;}
+}
+/* ---------------------------- */
+/* GRID */
+/* ---------------------------- */
+.row{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
+.full{ grid-column:1 / -1; }
+/* ---------------------------- */
+/* CAMPOS */
+/* ---------------------------- */
+.field label,
+label{
+  font-size:14px;
+  font-weight:600;
+  margin-bottom:4px;
+  color:#ffb3b3;
+}
+input, select{
+  width:100%;
+  padding:11px 12px;
+  border-radius:8px;
+  border:1px solid rgba(255,0,0,0.35);
+  background:rgba(0,0,0,0.4);
+  color:#fff;
+  transition:0.2s;
+}
+input:hover, select:hover{ border-color:#ff4d4d; }
+input:focus, select:focus{
+  outline:none;
+  border-color:#ff1a1a;
+  box-shadow:0 0 12px rgba(255,0,0,0.4);
+  transform:translateY(-1px);
+}
+input[type="file"]{ padding:8px; }
+/* ---------------------------- */
+/* CHECKBOX */
+/* ---------------------------- */
+.chk{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+}
+.chk input{ width:auto; }
+/* ---------------------------- */
+/* BOTÃO PRINCIPAL */
+/* ---------------------------- */
+button{
+  margin-top:25px;
+  width:100%;
+  padding:14px;
+  font-size:17px;
+  font-weight:700;
+  border:none;
+  border-radius:999px;
+  background:linear-gradient(135deg,#ff1a1a,#9b0000);
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(255,0,0,0.35);
+  transition:0.15s;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+}
+button:hover{
+  filter:brightness(1.1);
+  transform:translateY(-2px);
+  box-shadow:0 0 25px rgba(255,0,0,0.6);
+}
+button:active{ transform:scale(0.98); }
+/* LOADER */
+.is-loading{
+  opacity:0.8;
+  pointer-events:none;
+}
+.btn-loader{
+  width:17px;
+  height:17px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,0.35);
+  border-top-color:#fff;
+  animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ---------------------------- */
+/* RESULTADO */
+/* ---------------------------- */
+#resultado{
+  margin-top:22px;
+  font-size:15px;
+  background:rgba(255,40,40,0.08);
+  border:1px solid rgba(255,0,0,0.3);
+  padding:12px 14px;
+  border-radius:10px;
+  box-shadow:inset 0 0 15px rgba(255,0,0,0.12);
+}
+.loading-dots span{
+  display:inline-block;
+  width:5px;
+  height:5px;
+  margin:0 1px;
+  background:#ff3333;
+  border-radius:50%;
+  animation:bounce 0.8s infinite alternate;
+}
+.loading-dots span:nth-child(2){animation-delay:0.2s;}
+.loading-dots span:nth-child(3){animation-delay:0.4s;}
+@keyframes bounce{
+  to{transform:translateY(-3px); opacity:0.6;}
+}
+
+/* ---------------------------- */
+/* IFRAME PREVIEW */
+/* ---------------------------- */
+iframe{
+  width:100%;
+  min-height:600px;
+  margin-top:12px;
+  border-radius:14px;
+  border:1px solid rgba(255,0,0,0.25);
+  background:#000;
+  box-shadow:0 0 20px rgba(255,0,0,0.2);
+}
+
+/* RESPONSIVO */
+@media(max-width:720px){
+  .row{grid-template-columns:1fr;}
+  body{padding:20px 15px;}
+}
+</style>
+</head>
+<body>
+<h1>Gerador de Provas MSY</h1>
+<p class="sub">Ferramenta oficial da Ordem. Precisão, rapidez e padrão profissional.</p>
+
+<div class="card">
+  <div class="row">
+
+    <!-- ESCOLHA DE IA -->
+   <div class="full">
+  <label for="ia">Inteligência Artificial (motor de geração da prova)</label>
+  <select id="ia">
+    <option value="perplexity">
+      Perplexity (Sonar) – ideal para provas bem contextualizadas, estilo ENEM e ensino médio. 
+      Gera enunciados mais longos, situações-problema e questões que avaliam compreensão e interpretação.
+    </option>
+
+    <option value="llama" selected>
+      LLaMA – indicado para provas gerais e rascunhos rápidos. 
+      Produz questões variadas, mas pode exigir revisão do professor em conteúdos técnicos específicos.
+    </option>
+
+    <option value="deepseek">
+      DeepSeek – recomendado para provas técnicas, informática, matemática e exatas. 
+      Alta precisão conceitual, comandos corretos e estrutura de prova mais objetiva e estável.
+    </option>
+  </select>
+</div>
+
+
+    <div class="full">
+      <label>Curso</label>
+      <input type="text" id="curso" value="Windows">
+    </div>
+
+    <div class="full">
+      <label>Título da Prova</label>
+      <input type="text" id="titulo_prova">
+    </div>
+
+    <div>
+      <label>Pontos por questão</label>
+      <input type="number" id="pontos" value="5">
+    </div>
+
+    <div>
+      <label>Quantidade de questões</label>
+      <input type="number" id="quantidade" value="10">
+    </div>
+
+    <div>
+      <label>Matéria</label>
+      <input type="text" id="materia" value="Informática">
+    </div>
+
+    <div>
+      <label>Assunto</label>
+      <input type="text" id="assunto" value="Windows 11 – arquivos e atalhos">
+    </div>
+
+    <div>
+      <label>Nível</label>
+      <select id="nivel">
+        <option value="facil">Fácil</option>
+        <option value="medio" selected>Médio</option>
+        <option value="dificil">Difícil</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Tipo</label>
+      <select id="tipo">
+        <option value="multipla_escolha">Múltipla Escolha</option>
+        <option value="verdadeiro_falso">Verdadeiro ou Falso</option>
+        <option value="dissertativa">Dissertativa</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Estilo</label>
+      <select id="estilo">
+        <option value="escolar">Escolar</option>
+        <option value="concurso_publico">Concurso Público</option>
+        <option value="vestibular">ENEM</option>
+      </select>
+    </div>
+
+    <div>
+      <label>Público</label>
+      <input type="text" id="publico" value="Ensino médio">
+    </div>
+
+    <div>
+      <label>Versões</label>
+      <input type="number" id="versoes" value="1">
+    </div>
+
+    <div>
+      <label>Distribuição (%)</label>
+      <input type="text" id="dist_niveis" value="40/40/20">
+    </div>
+
+    <div class="full">
+      <label>Apostila (opcional)</label>
+      <input type="file" id="apostila">
+    </div>
+
+    <div class="full chk">
+      <input type="checkbox" id="usar_apostila">
+      <label>Usar conteúdo da apostila</label>
+    </div>
+
+    <div class="full chk">
+      <input type="checkbox" id="gabarito" checked>
+      <label>Incluir gabarito com explicações</label>
+    </div>
+
+  </div>
+
+  <button onclick="gerar()">Gerar Prova</button>
+  <div id="resultado"></div>
+  <iframe id="preview" style="display:none;"></iframe>
+</div>
+
+<script>
+async function gerar(){
+  const botao = document.querySelector("button");
+  const resultado = document.getElementById("resultado");
+  const iframe = document.getElementById("preview");
+
+  botao.classList.add("is-loading");
+  const textoOriginal = botao.innerHTML;
+  botao.innerHTML = '<div class="btn-loader"></div> Processando...';
+
+  resultado.innerHTML =
+    '<div class="loading-text">Preparando prova ' +
+    '<div class="loading-dots"><span></span><span></span><span></span></div>' +
+    '</div>';
+  iframe.style.display = "none";
+
+  const payload = {
+    curso: document.getElementById("curso").value.trim(),
+    titulo_prova: document.getElementById("titulo_prova").value.trim(),
+    pontos_por_questao: parseInt(document.getElementById("pontos").value),
+    materia: document.getElementById("materia").value.trim(),
+    assunto: document.getElementById("assunto").value.trim(),
+    quantidade: parseInt(document.getElementById("quantidade").value),
+    nivel: document.getElementById("nivel").value,
+    tipo: document.getElementById("tipo").value,
+    estilo: document.getElementById("estilo").value,
+    publico: document.getElementById("publico").value.trim(),
+    incluir_gabarito: document.getElementById("gabarito").checked,
+    versoes: parseInt(document.getElementById("versoes").value),
+    dist_niveis: document.getElementById("dist_niveis").value.trim(),
+    usar_apostila: document.getElementById("usar_apostila").checked,
+    ia: document.getElementById("ia").value   // <- IA escolhida
+  };
+
+  const formData = new FormData();
+  formData.append("dados", JSON.stringify(payload));
+  const arquivo = document.getElementById("apostila").files[0];
+  if(arquivo){
+    formData.append("apostila", arquivo);
+  }
+
+  try{
+    const resp = await fetch("https://masayoshi.app.n8n.cloud/webhook-test/gerar-prova",{
+      method:"POST",
+      body:formData
+    });
+    const data = await resp.json();
+
+    if(!data.html_prova){
+      resultado.innerHTML = "Erro: resposta sem html_prova.";
+      return;
+    }
+
+    resultado.innerHTML =
+      `<strong>Título:</strong> ${data.titulo || ""}<br>` +
+      `<strong>Curso:</strong> ${data.curso || ""}<br>` +
+      `<strong>Questões:</strong> ${data.questoes?.length || 0}`;
+
+    iframe.srcdoc =
+      `<style>
+        body { background:#ffffff !important; color:#000000 !important; font-family:Arial,sans-serif !important; }
+        * { color:#000000 !important; }
+      </style>` +
+      data.html_prova;
+
+    iframe.style.display = "block";
+  }catch(e){
+    resultado.innerHTML = "Erro ao gerar prova: " + e.message;
+  }finally{
+    botao.classList.remove("is-loading");
+    botao.innerHTML = textoOriginal;
+  }
+}
+</script>
+</body>
+</html>
