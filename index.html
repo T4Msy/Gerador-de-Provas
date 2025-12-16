@@ -86,8 +86,9 @@ label{
   font-weight:600;
   margin-bottom:4px;
   color:#ffb3b3;
+  display:block;
 }
-input, select{
+input, select, textarea{
   width:100%;
   padding:11px 12px;
   border-radius:8px;
@@ -95,9 +96,15 @@ input, select{
   background:rgba(0,0,0,0.4);
   color:#fff;
   transition:0.2s;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size:14px;
 }
-input:hover, select:hover{ border-color:#ff4d4d; }
-input:focus, select:focus{
+textarea{
+  resize:vertical;
+  min-height:80px;
+}
+input:hover, select:hover, textarea:hover{ border-color:#ff4d4d; }
+input:focus, select:focus, textarea:focus{
   outline:none;
   border-color:#ff1a1a;
   box-shadow:0 0 12px rgba(255,0,0,0.4);
@@ -143,6 +150,8 @@ button:active{ transform:scale(0.98); }
   border:2px solid rgba(255,255,255,0.35);
   border-top-color:#fff;
   animation:spin 0.7s linear infinite;
+  display:inline-block;
+  vertical-align:middle;
 }
 @keyframes spin{to{transform:rotate(360deg);}}
 #resultado{
@@ -153,6 +162,9 @@ button:active{ transform:scale(0.98); }
   padding:12px 14px;
   border-radius:10px;
   box-shadow:inset 0 0 15px rgba(255,0,0,0.12);
+}
+.loading-dots{
+  display:inline-block;
 }
 .loading-dots span{
   display:inline-block;
@@ -199,7 +211,6 @@ iframe{
   margin-top:2px;
   opacity:0.85;
 }
-/* deixar #prova-html pequeno e fora da vista, mas não display:none */
 #prova-html{
   position:absolute;
   left:-9999px;
@@ -208,6 +219,20 @@ iframe{
   background:#fff;
   color:#000;
 }
+.section-title{
+  font-size:16px;
+  font-weight:700;
+  color:#ff6666;
+  margin-top:24px;
+  margin-bottom:12px;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(255,0,0,0.3);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.section-title:first-child{
+  margin-top:0;
+}
 </style>
 </head>
 <body>
@@ -215,120 +240,163 @@ iframe{
 <p class="sub">Ferramenta oficial da Ordem. Precisão, rapidez e padrão profissional.</p>
 
 <div class="card">
-  <div class="row">
+  <form id="formProva">
+    <div class="row">
 
-    <!-- ESCOLHA DE IA -->
-    <div class="full">
-      <label for="ia">Inteligência Artificial (motor de geração da prova)</label>
-      <select id="ia">
-        <option value="perplexity">
-          Perplexity (Sonar) – ideal para provas bem contextualizadas, estilo ENEM e ensino médio.
-        </option>
-        <option value="llama" selected>
-          LLaMA – indicado para provas gerais e rascunhos rápidos.
-        </option>
-        <option value="deepseek">
-          DeepSeek – recomendado para provas técnicas, informática, matemática e exatas.
-        </option>
-      </select>
-    </div>
-
-    <div class="full">
-      <label>Curso</label>
-      <input type="text" id="curso" value="Windows">
-    </div>
-
-    <div class="full">
-      <label>Título da Prova</label>
-      <input type="text" id="titulo_prova">
-    </div>
-
-    <div>
-      <label>Pontos por questão</label>
-      <input type="number" id="pontos" value="5">
-    </div>
-
-    <div>
-      <label>Quantidade de questões</label>
-      <input type="number" id="quantidade" value="10">
-    </div>
-
-    <div>
-      <label>Matéria</label>
-      <input type="text" id="materia" value="Informática">
-    </div>
-
-    <div>
-      <label>Assunto</label>
-      <input type="text" id="assunto" value="Windows 11 – arquivos e atalhos">
-    </div>
-
-    <div>
-      <label>Nível principal</label>
-      <select id="nivel">
-        <option value="facil">Fácil</option>
-        <option value="medio" selected>Médio</option>
-        <option value="dificil">Difícil</option>
-      </select>
-    </div>
-
-    <div>
-      <label>Tipo</label>
-      <select id="tipo">
-        <option value="multipla_escolha">Múltipla Escolha</option>
-        <option value="verdadeiro_falso">Verdadeiro ou Falso</option>
-        <option value="dissertativa">Dissertativa</option>
-      </select>
-    </div>
-
-    <div>
-      <label>Estilo</label>
-      <select id="estilo">
-        <option value="escolar">Escolar</option>
-        <option value="concurso_publico">Concurso Público</option>
-        <option value="vestibular">ENEM</option>
-      </select>
-    </div>
-
-    <div>
-      <label>Público</label>
-      <input type="text" id="publico" value="Ensino médio">
-    </div>
-
-    <div class="full">
-      <label>Distribuição por nível (%)</label>
-      <input type="text" id="dist_niveis" value="40/40/20">
-      <div class="help-text">
-        Exemplo: 40/40/20 = 40% questões fáceis, 40% médias e 20% difíceis.
+      <!-- ============ CONFIGURAÇÕES GERAIS ============ -->
+      <div class="full">
+        <div class="section-title">⚙️ Configurações Gerais</div>
       </div>
+
+      <!-- ESCOLHA DE IA -->
+      <div class="full">
+        <label for="ia">Inteligência Artificial (motor de geração da prova)</label>
+        <select id="ia">
+          <option value="perplexity">
+            Perplexity (Sonar) – ideal para provas bem contextualizadas, estilo ENEM e ensino médio.
+          </option>
+          <option value="llama" selected>
+            LLaMA – indicado para provas gerais e rascunhos rápidos.
+          </option>
+          <option value="deepseek">
+            DeepSeek – recomendado para provas técnicas, informática, matemática e exatas.
+          </option>
+        </select>
+      </div>
+
+      <div class="full">
+        <label for="curso">Curso</label>
+        <input type="text" id="curso" value="Windows" required>
+      </div>
+
+      <div class="full">
+        <label for="titulo_prova">Título da Prova</label>
+        <input type="text" id="titulo_prova" placeholder="Deixe em branco para gerar automaticamente">
+      </div>
+
+      <!-- ============ CONTEÚDO DA PROVA ============ -->
+      <div class="full">
+        <div class="section-title">📝 Conteúdo da Prova</div>
+      </div>
+
+      <div>
+        <label for="materia">Matéria</label>
+        <input type="text" id="materia" value="Informática" required>
+      </div>
+
+      <div>
+        <label for="assunto">Assunto</label>
+        <input type="text" id="assunto" value="Windows 11 – arquivos e atalhos" required>
+      </div>
+
+      <div>
+        <label for="publico">Público-alvo</label>
+        <input type="text" id="publico" value="Ensino médio" required>
+      </div>
+
+      <div>
+        <label for="estilo">Estilo</label>
+        <select id="estilo">
+          <option value="escolar">Escolar</option>
+          <option value="concurso_publico">Concurso Público</option>
+          <option value="vestibular">ENEM</option>
+        </select>
+      </div>
+
+      <!-- CAMPO DE OBSERVAÇÕES DO PROFESSOR -->
+      <div class="full">
+        <label for="observacoes_professor">Observações do Professor (opcional)</label>
+        <textarea id="observacoes_professor" placeholder="Descreva suas preferências: estilo dos enunciados, complexidade desejada, formato específico, exemplos a evitar, etc."></textarea>
+        <div class="help-text">
+          Ex: "Evite questões muito decorativas", "Priorize aplicações práticas", "Use linguagem mais formal"
+        </div>
+      </div>
+
+      <!-- ============ FORMATO E ESTRUTURA ============ -->
+      <div class="full">
+        <div class="section-title">🎯 Formato e Estrutura</div>
+      </div>
+
+      <div>
+        <label for="tipo">Tipo de Questões</label>
+        <select id="tipo">
+          <option value="multipla_escolha">Múltipla Escolha</option>
+          <option value="verdadeiro_falso">Verdadeiro ou Falso</option>
+          <option value="dissertativa">Dissertativa</option>
+          <option value="mista">Mista (Todos os tipos embaralhados)</option>
+        </select>
+        <div class="help-text">
+          Tipo "Mista" combina múltipla escolha, V/F e dissertativas na mesma prova
+        </div>
+      </div>
+
+      <div>
+        <label for="quantidade">Quantidade de questões</label>
+        <input type="number" id="quantidade" value="10" min="1" max="50" required>
+      </div>
+
+      <div>
+        <label for="pontos">Pontos por questão</label>
+        <input type="number" id="pontos" value="5" min="1" required>
+      </div>
+
+      <div>
+        <label for="nivel">Nível principal</label>
+        <select id="nivel">
+          <option value="facil">Fácil</option>
+          <option value="medio" selected>Médio</option>
+          <option value="dificil">Difícil</option>
+        </select>
+      </div>
+
+      <div class="full">
+        <label for="dist_niveis">Distribuição por nível (%)</label>
+        <input type="text" id="dist_niveis" value="40/40/20" pattern="[0-9]+/[0-9]+/[0-9]+">
+        <div class="help-text">
+          Formato: Fácil/Médio/Difícil. Exemplo: 40/40/20 = 40% fáceis, 40% médias e 20% difíceis.
+        </div>
+      </div>
+
+      <!-- ============ MATERIAL DE APOIO ============ -->
+      <div class="full">
+        <div class="section-title">📚 Material de Apoio</div>
+      </div>
+
+      <div class="full">
+        <label for="apostila">Apostila (PDF opcional)</label>
+        <input type="file" id="apostila" accept=".pdf">
+        <div class="help-text">
+           Faça upload de um PDF para que a IA gere questões baseadas no conteúdo do arquivo
+        </div>
+      </div>
+
+      <div class="full chk">
+        <input type="checkbox" id="usar_apostila">
+        <label for="usar_apostila">Usar conteúdo da apostila para gerar as questões</label>
+      </div>
+
+      <!-- ============ OPÇÕES FINAIS ============ -->
+      <div class="full">
+        <div class="section-title">✅ Opções Finais</div>
+      </div>
+
+      <div class="full chk">
+        <input type="checkbox" id="gabarito" checked>
+        <label for="gabarito">Incluir gabarito com explicações ao final da prova</label>
+      </div>
+
     </div>
 
-    <div class="full">
-      <label>Apostila (opcional)</label>
-      <input type="file" id="apostila">
-    </div>
-
-    <div class="full chk">
-      <input type="checkbox" id="usar_apostila">
-      <label>Usar conteúdo da apostila</label>
-    </div>
-
-    <div class="full chk">
-      <input type="checkbox" id="gabarito" checked>
-      <label>Incluir gabarito com explicações</label>
-    </div>
-
-  </div>
-
-  <button onclick="gerar()">Gerar Prova</button>
+    <button type="submit">Gerar Prova</button>
+  </form>
 
   <div id="resultado"></div>
 
   <!-- Área da prova + botões de download -->
   <div id="prova-container" style="margin-top:16px; display:none;">
     <div class="download-actions">
-      <button type="button" onclick="baixarPDF()">Baixar em PDF</button>
-      <button type="button" onclick="baixarWord()">Baixar em Word</button>
+      <button type="button" onclick="baixarPDF()">📄 Baixar em PDF</button>
+      <button type="button" onclick="baixarWord()">📝 Baixar em Word</button>
     </div>
     <iframe id="preview"></iframe>
     <!-- Conteúdo da prova em HTML puro para exportação -->
@@ -344,8 +412,14 @@ iframe{
 <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.1.0/dist/html-docx.min.js"></script>
 
 <script>
+// Previne submit do formulário e chama gerar()
+document.getElementById('formProva').addEventListener('submit', function(e){
+  e.preventDefault();
+  gerar();
+});
+
 async function gerar(){
-  const botao = document.querySelector("button");
+  const botao = document.querySelector("button[type='submit']");
   const resultado = document.getElementById("resultado");
   const iframe = document.getElementById("preview");
   const provaContainer = document.getElementById("prova-container");
@@ -378,7 +452,8 @@ async function gerar(){
     versoes: 1,
     dist_niveis: document.getElementById("dist_niveis").value.trim(),
     usar_apostila: document.getElementById("usar_apostila").checked,
-    ia: document.getElementById("ia").value
+    ia: document.getElementById("ia").value,
+    observacoes_professor: document.getElementById("observacoes_professor").value.trim()
   };
 
   const formData = new FormData();
@@ -396,14 +471,16 @@ async function gerar(){
     const data = await resp.json();
 
     if(!data.html_prova){
-      resultado.innerHTML = "Erro: resposta sem html_prova.";
+      resultado.innerHTML = "❌ Erro: resposta sem html_prova.";
       return;
     }
 
     resultado.innerHTML =
+      `<strong>✅ Prova gerada com sucesso!</strong><br>` +
       `<strong>Título:</strong> ${data.titulo || ""}<br>` +
       `<strong>Curso:</strong> ${data.curso || ""}<br>` +
-      `<strong>Questões:</strong> ${data.questoes?.length || 0}`;
+      `<strong>Questões:</strong> ${data.questoes?.length || 0}<br>` +
+      `<strong>Tipo:</strong> ${payload.tipo === 'mista' ? 'Mista (Variada)' : payload.tipo}`;
 
     // guarda HTML cru para exportação
     provaHtmlDiv.innerHTML = data.html_prova;
@@ -419,7 +496,7 @@ async function gerar(){
     iframe.style.display = "block";
     provaContainer.style.display = "block";
   }catch(e){
-    resultado.innerHTML = "Erro ao gerar prova: " + e.message;
+    resultado.innerHTML = "❌ Erro ao gerar prova: " + e.message;
   }finally{
     botao.classList.remove("is-loading");
     botao.innerHTML = textoOriginal;
@@ -429,7 +506,7 @@ async function gerar(){
 function baixarPDF(){
   const element = document.getElementById("prova-html");
   if(!element || !element.innerHTML.trim()){
-    alert("Nenhuma prova gerada ainda.");
+    alert("❌ Nenhuma prova gerada ainda.");
     return;
   }
 
@@ -451,7 +528,6 @@ function baixarPDF(){
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
 
-  // Usa o modo async para poder limpar depois
   html2pdf().set(opt).from(temp).save().then(() => {
     document.body.removeChild(temp);
   }).catch(() => {
@@ -462,11 +538,11 @@ function baixarPDF(){
 function baixarWord(){
   const element = document.getElementById("prova-html");
   if(!element || !element.innerHTML.trim()){
-    alert("Nenhuma prova gerada ainda.");
+    alert("❌ Nenhuma prova gerada ainda.");
     return;
   }
   if (!window.htmlDocx || !window.htmlDocx.asBlob) {
-    alert("Biblioteca de Word não carregou.");
+    alert("❌ Biblioteca de Word não carregou.");
     return;
   }
   const html =
@@ -482,6 +558,16 @@ function baixarWord(){
   link.click();
   document.body.removeChild(link);
 }
+
+// Habilita/desabilita checkbox de usar apostila quando arquivo é selecionado
+document.getElementById('apostila').addEventListener('change', function(){
+  const checkbox = document.getElementById('usar_apostila');
+  if(this.files && this.files[0]){
+    checkbox.checked = true;
+  } else {
+    checkbox.checked = false;
+  }
+});
 </script>
 </body>
 </html>
