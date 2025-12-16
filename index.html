@@ -432,6 +432,17 @@ function baixarPDF(){
     alert("Nenhuma prova gerada ainda.");
     return;
   }
+
+  // Clona o conteúdo em um container visível e simples
+  const temp = document.createElement("div");
+  temp.style.background = "#ffffff";
+  temp.style.color = "#000000";
+  temp.style.padding = "20px";
+  temp.style.fontFamily = "Arial, sans-serif";
+  temp.style.fontSize = "12pt";
+  temp.innerHTML = element.innerHTML;
+  document.body.appendChild(temp);
+
   const opt = {
     margin: 10,
     filename: 'prova-masayoshi.pdf',
@@ -439,7 +450,13 @@ function baixarPDF(){
     html2canvas: { scale: 2, useCORS: true },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   };
-  html2pdf().set(opt).from(element).save();
+
+  // Usa o modo async para poder limpar depois
+  html2pdf().set(opt).from(temp).save().then(() => {
+    document.body.removeChild(temp);
+  }).catch(() => {
+    document.body.removeChild(temp);
+  });
 }
 
 function baixarWord(){
